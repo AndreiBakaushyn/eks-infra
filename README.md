@@ -1,4 +1,4 @@
-# eks-infra
+# Highest eks-infra 
 Prepare the infrastructure for a Kubernetes (AWS EKS service) cluster using Terraform. For the new infrastructure (dev environment), we need to be created:
 VPC, subnets, and related components.
 An ECR repository.
