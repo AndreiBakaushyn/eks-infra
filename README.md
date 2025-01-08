@@ -1,2 +1,2 @@
 # eks-infra
-Diploma
+
