@@ -299,7 +299,7 @@ resource "aws_eks_access_policy_association" "this" {
 ################################################################################
 
 module "kms" {
-  source  = "/home/ivcpaladin/01.HW_automation/eks-infra/kms-module"
+  source  = "../kms-module"
   #version = "2.1.0" # Note - be mindful of Terraform/provider version compatibility between modules
 
   create = local.create && var.create_kms_key && local.enable_cluster_encryption_config # not valid on Outposts
