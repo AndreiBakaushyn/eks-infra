@@ -45,14 +45,15 @@ module "kms" {
 }
 
 module "eks" {
-  source = "./eks-module" # Локальный путь к клонированному модулю EKS
+  source = "./eks-module" # Локальный путь к модулю EKS
 
   cluster_name    = "andreibakaushyn-eks-cluster"
   cluster_version = "1.27"
-  subnets         = module.vpc.private_subnets
-  vpc_id          = module.vpc.vpc_id
 
-  node_groups = {
+  # Используем корректные переменные из модуля
+  subnet_ids = module.vpc.private_subnets
+
+  eks_managed_node_groups = {
     eks_nodes = {
       desired_capacity = 2
       max_capacity     = 2
@@ -61,9 +62,5 @@ module "eks" {
       instance_type = "t3.micro"
     }
   }
-
-  tags = {
-    Owner       = "andreibakaushyn"
-    Environment = "dev"
-  }
+  
 }
