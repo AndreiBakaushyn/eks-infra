@@ -33,6 +33,17 @@ resource "aws_ecr_repository" "repo" {
   name = "andreibakaushyn-eks-repo"
 }
 
+module "kms" {
+  source = "./kms-module"
+  
+  create = true
+  description = "KMS key for EKS cluster"
+  tags = {
+    Environment = "dev"
+    Owner       = "andreibakaushyn"
+  }
+}
+
 module "eks" {
   source = "./eks-module" # Локальный путь к клонированному модулю EKS
 
