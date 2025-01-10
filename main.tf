@@ -49,6 +49,7 @@ module "eks" {
 
   cluster_name    = "andreibakaushyn-eks-cluster"
   cluster_version = "1.27"
+  vpc_id          = module.vpc.vpc_id #Передача ID VPC
 
   # Используем корректные переменные из модуля
   subnet_ids = module.vpc.private_subnets
