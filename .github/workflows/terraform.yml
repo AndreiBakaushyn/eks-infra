@@ -28,9 +28,15 @@ jobs:
 
       - name: 'Initialize Terraform'
         run: terraform init
+        env:
+          TF_LOG: DEBUG
 
       - name: 'Terraform Plan'
         run: terraform plan
+        env:
+          TF_LOG: DEBUG
 
       - name: 'Terraform Apply'
         run: terraform apply -auto-approve
+        env:
+          TF_LOG: DEBUG
