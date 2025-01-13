@@ -28,15 +28,13 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+
+      # 4. Проверка валидности конфигурации Terraform
+      - name: 'Validate Terraform configuration'
         run: terraform validate
 
       # 5. Инициализация Terraform
       - name: 'Initialize Terraform'
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
         run: terraform init
 
       # 6. Планирование Terraform
