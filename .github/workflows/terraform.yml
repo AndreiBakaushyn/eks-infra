@@ -23,52 +23,26 @@ jobs:
 
       # 3. Настройка AWS credentials
       - name: 'Configure AWS credentials'
-        id: aws-credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-
-      # 4. Сохранение AWS токена
-      - name: 'Save AWS Session Token'
-        run: echo "AWS_SESSION_TOKEN=${{ steps.aws-credentials.outputs.aws_session_token }}" >> $GITHUB_ENV
-
-
-      # 6. Проверка валидности конфигурации Terraform
-      - name: 'Validate Terraform configuration'
         run: terraform validate
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
 
-      # 7. Инициализация Terraform
+      # 5. Инициализация Terraform
       - name: 'Initialize Terraform'
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
         run: terraform init
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-        env:
-          TF_LOG: DEBUG
 
-      # 8. Планирование Terraform
+      # 6. Планирование Terraform
       - name: 'Terraform Plan'
-        run: terraform plan
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-        env:
-          TF_LOG: DEBUG
+        run: terraform plan -out=tfplan
 
-      # 9. Применение Terraform
+      # 7. Применение Terraform
       - name: 'Terraform Apply'
-        run: terraform apply -auto-approve
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-        env:
-          TF_LOG: DEBUG
+        run: terraform apply -auto-approve tfplan
