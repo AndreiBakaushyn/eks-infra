@@ -30,13 +30,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # 4. Сохранение токена на каждой стадии
-      - name: 'Save AWS Token'
+      # 4. Сохранение AWS токена
+      - name: 'Save AWS Session Token'
         run: echo "AWS_SESSION_TOKEN=${{ steps.aws-credentials.outputs.aws_session_token }}" >> $GITHUB_ENV
 
       # 5. Проверка формата Terraform
       - name: 'Check Terraform formatting'
-        run: terraform fmt -check
+        run: terraform fmt -check || terraform fmt && exit 1
 
       # 6. Проверка валидности конфигурации Terraform
       - name: 'Validate Terraform configuration'
@@ -47,28 +47,15 @@ jobs:
         run: terraform init
         env:
           TF_LOG: DEBUG
-          TF_VAR_vpc_id: ${{ secrets.VPC_ID }}
 
       # 8. Планирование Terraform
       - name: 'Terraform Plan'
         run: terraform plan
         env:
           TF_LOG: DEBUG
-          TF_VAR_vpc_id: ${{ secrets.VPC_ID }}
 
       # 9. Применение Terraform
       - name: 'Terraform Apply'
         run: terraform apply -auto-approve
         env:
           TF_LOG: DEBUG
-          TF_VAR_vpc_id: ${{ secrets.VPC_ID }}
-
-      # 10. Вывод состояния Terraform для отладки
-      - name: 'Output Terraform State'
-        run: terraform show
-        env:
-          TF_LOG: DEBUG
-
-      # 11. Вывод переменных окружения (дебаг)
-      - name: 'Debug Environment Variables'
-        run: env
