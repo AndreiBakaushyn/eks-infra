@@ -23,82 +23,52 @@ jobs:
 
       # 3. Настройка AWS credentials
       - name: 'Configure AWS credentials'
+        id: aws-credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # 4. Проверка формата Terraform
+      # 4. Сохранение токена на каждой стадии
+      - name: 'Save AWS Token'
+        run: echo "AWS_SESSION_TOKEN=${{ steps.aws-credentials.outputs.aws_session_token }}" >> $GITHUB_ENV
+
+      # 5. Проверка формата Terraform
       - name: 'Check Terraform formatting'
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
         run: terraform fmt -check
 
-      # 5. Проверка валидности конфигурации Terraform
+      # 6. Проверка валидности конфигурации Terraform
       - name: 'Validate Terraform configuration'
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
         run: terraform validate
 
-      # 6. Инициализация Terraform
+      # 7. Инициализация Terraform
       - name: 'Initialize Terraform'
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
         run: terraform init
         env:
           TF_LOG: DEBUG
-          TF_VAR_vpc_id: ${{ secrets.VPC_ID }} # Пример передачи переменной VPC_ID из секретов
+          TF_VAR_vpc_id: ${{ secrets.VPC_ID }}
 
-      # 7. Планирование Terraform
+      # 8. Планирование Terraform
       - name: 'Terraform Plan'
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
         run: terraform plan
         env:
           TF_LOG: DEBUG
           TF_VAR_vpc_id: ${{ secrets.VPC_ID }}
 
-      # 8. Применение Terraform
+      # 9. Применение Terraform
       - name: 'Terraform Apply'
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
         run: terraform apply -auto-approve
         env:
           TF_LOG: DEBUG
           TF_VAR_vpc_id: ${{ secrets.VPC_ID }}
 
-      # 9. Вывод состояния Terraform для отладки
+      # 10. Вывод состояния Terraform для отладки
       - name: 'Output Terraform State'
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
         run: terraform show
         env:
           TF_LOG: DEBUG
 
-      # 10. Вывод переменных окружения (дебаг)
+      # 11. Вывод переменных окружения (дебаг)
       - name: 'Debug Environment Variables'
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
         run: env
